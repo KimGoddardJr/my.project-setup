@@ -1,0 +1,92 @@
+{
+    "DIGITAL_HUMAN": 
+    
+        {
+
+    "____RESSOURCES____":{
+
+                "MESH" : {},
+                "IMAGES": {}
+
+                        },
+
+    "___MODEL___":{
+
+        "____SCAN____" : {
+
+            "__WORKFILES__" : {},
+            "_EXPORT_" : {
+                        "HISTORY" : {},
+                        "OUT" : {}
+                            }      
+                        },
+        "___WRAP___" : {
+
+            "__WORKFILES__" : {},
+            "_EXPORT_" : {
+                        "HISTORY" : {},
+                        "OUT" : {}
+                            }      
+                        },
+
+        "__CLEANUP__" : {
+
+            "__WORKFILES__" : {},
+            "_EXPORT_" : {
+                        "HISTORY" : {},
+                        "OUT" : {}
+                            }      
+                        },
+
+        "_GROOMING_" : {
+
+            "__WORKFILES__" : {},
+            "_EXPORT_" : {
+                        "HISTORY" : {},
+                        "OUT" : {}
+                            }      
+                        },
+        "ASSEMBLY" : {
+
+            "__WORKFILES__" : {},
+            "_EXPORT_" : {
+                        "HISTORY" : {},
+                        "OUT" : {}
+                            }      
+                        }
+
+                    },
+
+    "__TEXTURES__":{
+
+        "___IMPORT___" : {
+
+            "HISTORY" : {},
+            "OUT" : {}      
+                        },
+
+        "__WORKFILES__" : {},
+
+        "_EXPORT_" : {
+
+            "HISTORY" : {},
+            "OUT" : {}      
+                        }
+
+                    },
+
+    "__RIG__":{
+
+        "__WORKFILES__" : {
+
+                        "MATCHING" : {},
+                        "TRANSFER" : {}
+                        },
+        "_EXPORT_" : {
+                    "HISTORY" : {},
+                    "OUT" : {}
+                        }      
+                    }
+        }
+
+}
