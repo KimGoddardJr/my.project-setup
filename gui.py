@@ -124,13 +124,12 @@ class ProjectManager(QWidget):
 
         def initUI(self):
 
-                
-
                 self.toolbox = QVBoxLayout()
                 
                 self.image_box = QVBoxLayout()
                 hslu_image = SizePimp().imageFromBase64(hslu_icon_large.encode('utf-8'))
-                self.image_box.addLayout(SizePimp().draw_image(hslu_image))
+                bergli_pic = os.path.join('PICS','bergli_circle.png')
+                self.image_box.addLayout(SizePimp().draw_image(bergli_pic))
                 #self.project_info = QLabel('Project Setup')
                 #self.image_box.addWidget(self.project_info)
                 ######
