@@ -15,7 +15,8 @@ class setup_maker(object):
         with open('{}/{}'.format(self.json_path,json_template)) as template_file:
             template = json.load(template_file)
 
-        type(template)
+        type(template)                #message_bytes = base64.decodebytes(base64_bytes)
+                #message = message_bytes.decodebytes('utf-8')
 
         project_path = os.path.join(dh_path,dh_name)
         self.makedir(project_path)

@@ -1,0 +1,101 @@
+QWidget {
+    font-size: 12px;
+
+}
+
+QTableView {
+    font-size: 10px;
+    alternate-background-color: #EEEEFF;
+}
+
+QMainWindow {
+
+    border: 3px solid black;
+    border-radius: 6px;
+    background-color: rgb(162, 206, 217);
+
+}
+
+
+QPushButton {
+    font-size: 16px;
+    min-width: 10px;
+
+    border: 2px solid black;
+    border-radius: 4px;
+    background-color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+    background-color: rgb(162, 206, 217);
+}
+QPushButton:pressed {
+    background-color: rgb(82, 126, 178);     
+}
+
+
+ColorButton::enabled {
+    border: 1px solid #28dfdf;
+}
+
+ColorButton::disabled {
+    border: 1px solid #AAAAAA;
+}
+
+QLineEdit {
+    font-size: 14px;
+    color: grey;
+    min-width: 10px;
+
+    border: 2px solid black;
+    border-radius: 4px;
+    background-color: rgb(255, 255, 255);
+}
+
+
+Browser QGroupBox {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);
+    border: 2px solid #999999;
+    border-radius: 5px;
+    margin-top: 1ex; /* leave space at the top for the title */
+    font-size: 13px;
+    color: black;
+}
+
+Browser QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* position at the top center */
+    padding: 0 3px;
+    font-size: 13px;
+    color: black;
+}
+
+PluginItem {
+    border: 2px solid black;
+    background: white;
+}
+
+
+PluginItem Frame {
+    background: #CCCCCC;
+}
+
+
+TabButton {
+    border: 1px solid #8f8f91;
+    border-radius: 2px;
+    padding: 3px;
+    min-width: 120px;
+}
+
+TabButton::checked {
+    background-color: qlineargradient(x1: 0, y1: 0 , x2: 0, y2: 1,
+                                      stop: 0 #9a9b9e, stop: 1 #babbbe);
+}
+
+
+TabButton::pressed {
+    background-color: qlineargradient(x1: 0, y1: 0 , x2: 0, y2: 1,
+                                      stop: 0 #9a9b9e, stop: 1 #babbbe);
+}

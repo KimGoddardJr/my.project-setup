@@ -3,28 +3,24 @@ import os
 from subprocess import Popen, PIPE
 import shlex
 from pathlib import Path
+import platform
 
 import configparser
 from glob import glob
 import base64
 from collections import defaultdict
-from PyQt5.QtWidgets import QApplication, QTabWidget, QLabel, QCheckBox, QComboBox, QWidget, QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QLineEdit
+from PyQt5.QtWidgets import QApplication, QTabWidget, QLabel, QCheckBox, QComboBox, QWidget, QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QLineEdit, QSystemTrayIcon
 from PyQt5.QtCore import Qt, QSize, QByteArray
 from PyQt5 import QtGui
 
-from draw_items import hslu_icon_large
+from draw_items import hslu_icon_large, hslu_icon_small
 from setup import setup_maker
-import darkorange
 
 
 
 class SizePimp(QWidget):
         def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-
-                self.resolution = QApplication.desktop().availableGeometry()
-                self.main_W = int(self.resolution.width() / 4)
-                self.main_H = int(self.resolution.height() / 2)
 
         def launch_decorator(launch):
                 def check_exec_type(self,software):
@@ -77,42 +73,67 @@ class App(QMainWindow):
         def __init__(self):
                 super().__init__()
                 # size definitions
-                #unit = resolution.width()/1920
-                #checkbox_constant = int(math.ceil(float(resolution.width())/float(unit*160.0)))
-                #stylesheet = hou.qt.styleSheet()
-                #checkbox_stylesheet = "QListWidget::indicator {0} width: {1}px; height: {1}px;{2}".format("{",checkbox_constant,"}")
+                
+                x, y = self.get_resolution()
 
-                self.setMinimumWidth(SizePimp().main_W)
-                self.setMinimumHeight(SizePimp().main_H)
+                if platform.system() == 'Linux':
+                        int_x = int(x/8)
+                        int_y = int(y/4)
+                elif platform.system() == 'MacOS':
+                        int_x = int(x/4)
+                        int_y = int(y/2)
+                else:
+                        int_x = int(x/4)
+                        int_y = int(y/2)
+                
+                self.setMinimumWidth(int_x)
+                self.setMinimumHeight(int_y)
+
+                if x > 1920 and y > 1080:
+                        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+                        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+                else:
+                        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+                        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, False)
+
+                #self.resolution = self.screen()
+                #self.main_W = int(self.resolution[0] / 3)
+                #self.main_H = int(self.resolution.height() / 2)
+
                 sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                 sizePolicy.setHorizontalStretch(0)
                 sizePolicy.setVerticalStretch(0)
                 self.setSizePolicy(sizePolicy)
                 #create a style guide for the layout colors
-                #self.setStyleSheet(darkorange.getStyleSheet())
+                self.setStyleSheet(open('stylesheets/hslu_animation.css').read())
                 #self.setStyle("plastique")
+
                 self.setWindowTitle('HSLU PROJECT SETUP')
 
                 # The main layout for the window
-                self.main_layout = QVBoxLayout()
-                self.setLayout(self.main_layout)
+                #self.main_layout = QVBoxLayout()
+                #self.setLayout(self.main_layout)
                 #window icon
-                base64_bytes = hslu_icon_large.encode('utf-8')
-                #message_bytes = base64.decodebytes(base64_bytes)
-                #message = message_bytes.decodebytes('utf-8')
-                self.setWindowIcon(SizePimp().iconFromBase64(base64_bytes))
-                
+                hslu_image_icon = SizePimp().iconFromBase64(hslu_icon_small.encode('utf-8'))
+                self.setWindowIcon(hslu_image_icon)
+
+                # Create the tray
+                self.tray = QSystemTrayIcon()
+                self.tray.setIcon(hslu_image_icon)
+                self.tray.setVisible(True)
+
                 self.project_manager = ProjectManager(self)
                 self.setMenuWidget(self.project_manager)
 
-                """
-                self.shit_window = ShitWindow(self)
-                self.save_window = SavePrefs(self)
-                self.pipeline_manager = PipelineManager(self)
-                self.setMenuWidget(self.shit_window)
-                self.setCentralWidget(self.save_window)
-                """
                 self.show()
+
+        def get_resolution(self):
+                temporary_app = QApplication
+                screen = temporary_app.primaryScreen()
+                geo = screen.availableGeometry()
+                        
+                return (geo.width(), geo.height())
       
 class ProjectManager(QWidget):
 
@@ -127,9 +148,9 @@ class ProjectManager(QWidget):
                 self.toolbox = QVBoxLayout()
                 
                 self.image_box = QVBoxLayout()
-                hslu_image = SizePimp().imageFromBase64(hslu_icon_large.encode('utf-8'))
-                bergli_pic = os.path.join('PICS','bergli_circle.png')
-                self.image_box.addLayout(SizePimp().draw_image(bergli_pic))
+                hslu_image_menu = SizePimp().imageFromBase64(hslu_icon_large.encode('utf-8'))
+                #bergli_pic = os.path.join('PICS','bergli_circle.png')
+                self.image_box.addLayout(SizePimp().draw_image(hslu_image_menu))
                 #self.project_info = QLabel('Project Setup')
                 #self.image_box.addWidget(self.project_info)
                 ######
@@ -137,8 +158,19 @@ class ProjectManager(QWidget):
                 ######
 
                 self.project_box = QHBoxLayout()
-                self.project_name_label = QLabel('Project Name')
+                self.project_name_label = QLabel('Project Name:')
                 self.project_name = QLineEdit('Awesome Project')
+                self.project_name.setStyleSheet(
+                        """
+                        QLineEdit {
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: black;
+                        border: 3px solid black;
+                        border-radius: 3px;
+                        }
+                        """
+                                                )
                 self.project_name.textChanged.connect(self.text_changes)
 
                 self.path_btn = QPushButton('PATH')
@@ -153,12 +185,12 @@ class ProjectManager(QWidget):
 
                 self.path_box = QVBoxLayout()
                 
-                self.path_label = QLabel('Project PATH')
+                #self.path_label = QLabel('Project PATH:')
                 default_path = Path.home()
                 default_text = os.path.join(default_path,'Documents',self.project_name.text())
                 self.path_text = QLineEdit(default_text)
 
-                self.path_box.addWidget(self.path_label)
+                #self.path_box.addWidget(self.path_label)
                 self.path_box.addWidget(self.path_text)
                 ######
                 self.toolbox.addLayout(self.path_box)
