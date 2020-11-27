@@ -115,7 +115,7 @@ class App(QMainWindow):
                 #self.main_layout = QVBoxLayout()
                 #self.setLayout(self.main_layout)
                 #window icon
-                hslu_image_icon = SizePimp().iconFromBase64(hslu_icon_small.encode('utf-8'))
+                hslu_image_icon = SizePimp().iconFromBase64(hslu_icon_large.encode('utf-8'))
                 self.setWindowIcon(hslu_image_icon)
 
                 # Create the tray
@@ -124,7 +124,9 @@ class App(QMainWindow):
                 self.tray.setVisible(True)
 
                 self.project_manager = ProjectManager(self)
+                self.tab_options = ProjectTabs(self)
                 self.setMenuWidget(self.project_manager)
+                self.setCentralWidget(self.tab_options)
 
                 self.show()
 
@@ -144,6 +146,7 @@ class ProjectManager(QWidget):
                 self.initUI()
 
         def initUI(self):
+
 
                 self.toolbox = QVBoxLayout()
                 
@@ -195,17 +198,6 @@ class ProjectManager(QWidget):
                 ######
                 self.toolbox.addLayout(self.path_box)
                 ######
-
-                setup_type = ['CGI Short','Stop Motion','2D Animation','Mixed Media']
-
-                for project_type in setup_type:
-                        self.project_setup_button = QPushButton(project_type)
-                        #self.cancel_btn.clicked.connect(self.close)
-                        self.toolbox.addWidget(self.project_setup_button)
-
-                #self.pipeline_picker = QComboBox()
-                #self.pipeline_picker.addItems(chose)
-                #self.toolbox.addWidget(self.pipeline_picker)
                 
                 self.setLayout(self.toolbox)
         
@@ -225,6 +217,51 @@ class ProjectManager(QWidget):
                         if exc.errno != errno.EEXIST:
                                 raise
                         pass
+
+
+class ProjectTabs(QWidget):
+
+        def __init__(self, *args, **kwargs):
+                super(ProjectTabs, self).__init__(*args, **kwargs)
+                #self.parent = parent
+                #resolution = ScreenInfo.resolution()
+                self.initUI()
+
+        def initUI(self):
+                
+                self.main_tab = QTabWidget()
+
+                ###TEMPLATE TAB###
+                self.template_widget = QWidget()
+                self.template_box = QVBoxLayout()
+                setup_type = ['CGI Short','Stop Motion','2D Animation','Mixed Media']
+                combo_box_list = ['PINATA','PARANORMAN','STARWARS','OTHER']
+
+                for project_type in setup_type:
+                        self.button_box = QHBoxLayout()
+                        self.project_setup_button = QPushButton(project_type)
+                        self.button_templates = QComboBox()
+                        self.button_templates.addItems(combo_box_list)
+                        #self.cancel_btn.clicked.connect(self.close)
+                        self.button_box.addWidget(self.project_setup_button)
+                        self.button_box.addWidget(self.button_templates)
+                        self.template_box.addLayout(self.button_box)
+
+                self.template_widget.setLayout(self.template_box)
+                self.main_tab.addTab(self.template_widget,'TEMPLATES')
+
+                ###SOURCE PROJECT###
+                self.source_widget = QWidget()
+                self.source_box = QVBoxLayout()
+
+                self.source_widget.setLayout(self.source_box)
+                self.main_tab.addTab(self.source_widget,'SOURCE PROJECT')
+
+                ###SETUP TABS###s
+                self.tab_placement = QHBoxLayout()
+                self.tab_placement.addWidget(self.main_tab)
+                
+                self.setLayout(self.tab_placement)
 
 
 def main():         

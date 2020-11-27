@@ -10,15 +10,15 @@ class setup_maker(object):
     def __init__(self,json_path):
         self.json_path = json_path
 
-    def folder_setup(self,dh_name,dh_path,json_template):
+    def folder_setup(self,project_name,project_path,json_template):
+        json_file_path = os.path.join(self.json_path,json_template)
 
-        with open('{}/{}'.format(self.json_path,json_template)) as template_file:
+        with open('{}'.format(json_file_path)) as template_file:
             template = json.load(template_file)
 
-        type(template)                #message_bytes = base64.decodebytes(base64_bytes)
-                #message = message_bytes.decodebytes('utf-8')
-
-        project_path = os.path.join(dh_path,dh_name)
+        type(template)
+        
+        project_path = os.path.join(project_path,project_name)
         self.makedir(project_path)
         container = [x for x in template][0]
         self.recursive_foldering(project_path, template[container])

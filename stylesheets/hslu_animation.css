@@ -34,11 +34,11 @@ QPushButton:pressed {
 }
 
 
-ColorButton::enabled {
+ColorButton:enabled {
     border: 1px solid #28dfdf;
 }
 
-ColorButton::disabled {
+ColorButton:disabled {
     border: 1px solid #AAAAAA;
 }
 
@@ -52,50 +52,96 @@ QLineEdit {
     background-color: rgb(255, 255, 255);
 }
 
-
-Browser QGroupBox {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);
-    border: 2px solid #999999;
-    border-radius: 5px;
-    margin-top: 1ex; /* leave space at the top for the title */
-    font-size: 13px;
-    color: black;
+QTabWidget::pane {
+    border: 1px solid black;
+    background:rgb(196, 232, 241);
 }
 
-Browser QGroupBox::title {
-    subcontrol-origin: margin;
-    subcontrol-position: top center; /* position at the top center */
-    padding: 0 3px;
-    font-size: 13px;
-    color: black;
+QTabWidget::tab-bar:top {
+    top: 1px;
 }
 
-PluginItem {
-    border: 2px solid black;
-    background: white;
+QTabWidget::tab-bar:bottom {
+    bottom: 1px;
+    
 }
 
-
-PluginItem Frame {
-    background: #CCCCCC;
+QTabWidget::tab-bar:left {
+    right: 1px;
 }
 
-
-TabButton {
-    border: 1px solid #8f8f91;
-    border-radius: 2px;
-    padding: 3px;
-    min-width: 120px;
+QTabWidget::tab-bar:right {
+    left: 1px;
 }
 
-TabButton::checked {
-    background-color: qlineargradient(x1: 0, y1: 0 , x2: 0, y2: 1,
-                                      stop: 0 #9a9b9e, stop: 1 #babbbe);
+QTabBar::tab {
+    border: 1px solid black;
 }
 
+QTabBar::tab:selected {
+    background: rgb(196, 232, 241);
+}
 
-TabButton::pressed {
-    background-color: qlineargradient(x1: 0, y1: 0 , x2: 0, y2: 1,
-                                      stop: 0 #9a9b9e, stop: 1 #babbbe);
+QTabBar::tab:!selected {
+
+    background: rgb(219, 240, 245);
+}
+
+QTabBar::tab:!selected:hover {
+    background: rgb(162, 206, 217);;
+}
+
+QTabBar::tab:top:!selected {
+    margin-top: 3px;
+}
+
+QTabBar::tab:bottom:!selected {
+    margin-bottom: 3px;
+}
+
+QTabBar::tab:top, QTabBar::tab:bottom {
+    min-width: 8ex;
+    margin-right: -1px;
+    padding: 5px 10px 5px 10px;
+}
+
+QTabBar::tab:top:selected {
+    border-bottom-color: none;
+}
+
+QTabBar::tab:bottom:selected {
+    border-top-color: none;
+}
+
+QTabBar::tab:top:last, QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
+    margin-right: 0;
+}
+
+QTabBar::tab:left:!selected {
+    margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+    margin-left: 3px;
+}
+
+QTabBar::tab:left, QTabBar::tab:right {
+    min-height: 8ex;
+    margin-bottom: -1px;
+    padding: 10px 5px 10px 5px;
+}
+
+QTabBar::tab:left:selected {
+    border-left-color: none;
+}
+
+QTabBar::tab:right:selected {
+    border-right-color: none;
+}
+
+QTabBar::tab:left:last, QTabBar::tab:right:last,
+QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
+
+    margin-bottom: 0;
 }
