@@ -235,7 +235,7 @@ class ProjectTabs(QWidget):
                 self.template_widget = QWidget()
                 self.template_box = QVBoxLayout()
                 setup_type = ['CGI Short','Stop Motion','2D Animation','Mixed Media']
-                combo_box_list = ['PINATA','PARANORMAN','STARWARS','OTHER']
+                combo_box_list = ['PINATA','PARANORMAN','STARWARS','GHIBLI']
 
                 for project_type in setup_type:
                         self.button_box = QHBoxLayout()
