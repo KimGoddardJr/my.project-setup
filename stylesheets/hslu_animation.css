@@ -52,6 +52,23 @@ QLineEdit {
     background-color: rgb(255, 255, 255);
 }
 
+QComboBox {
+    
+    font-size: 14px;
+    color: grey;
+    min-width: 10px;
+
+    border: 2px solid black;
+    border-radius: 4px;
+    background-color: rgb(255, 255, 255);
+
+}
+
+QComboBox::drop-down 
+{
+    border: 0px; /* This seems to replace the whole arrow of the combo box */
+}
+
 QTabWidget::pane {
     border: 1px solid black;
     background:rgb(196, 232, 241);

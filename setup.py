@@ -25,18 +25,27 @@ class setup_maker(object):
 
     
     def recursive_foldering(self, project_path, container):
+        try:
+            for (i,i_group) in enumerate(container):
+                #print(i,i_group)
+                subfolder_id = container[i]
+                for (parent_dir, children_dirs) in subfolder_id.items():
+                    subfolder = os.path.join(project_path,parent_dir)
+                    self.makedir(subfolder)
+                    print(subfolder)
 
-        for (cur_folder, subfolders) in container.items():
-            new_path = os.path.join(project_path,cur_folder)
-            self.makedir(new_path)
-            print(new_path)
-            for (x_folder,y_folders) in subfolders.items():
-                #print(x_folder)
-                mod_path = os.path.join(new_path,x_folder)
-                print(mod_path)
-                self.makedir(mod_path)
-                #print(new_path)
-                self.recursive_foldering(mod_path,subfolders[x_folder])
+                    for (j,j_group) in enumerate(children_dirs):
+                        child_folder_id = children_dirs[j]
+
+                        for (x_folder, dummy) in child_folder_id.items():
+                            mod_path = os.path.join(subfolder,x_folder)
+                            print(mod_path)
+                            self.makedir(mod_path)
+                            #print(new_path)
+                            self.recursive_foldering(mod_path,child_folder_id[x_folder])
+        except:
+            pass
+
 
     def makedir(self,folder_name):
             try:
@@ -47,5 +56,5 @@ class setup_maker(object):
                 pass
 
 #os.rmdir('/home/kg/Documents/MIKE')
-#setup = setup_maker('JSON')
-#setup.folder_setup('STELLA','/home/kg/Documents/','model-template.json')
+setup = setup_maker('/home/kg/Documents')
+setup.folder_setup('MENGELE','/home/kg/Documents/','MENGELE.json')

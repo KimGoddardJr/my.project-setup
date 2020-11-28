@@ -241,6 +241,13 @@ class ProjectTabs(QWidget):
                         self.button_box = QHBoxLayout()
                         self.project_setup_button = QPushButton(project_type)
                         self.button_templates = QComboBox()
+                        self.button_templates.setStyleSheet("""
+                        QComboBox::down-arrow {
+                        image: url(PICS/dropdown_arrow.png);
+                        width: 14px;
+                        height: 14px;
+                        }                   
+                        """)
                         self.button_templates.addItems(combo_box_list)
                         #self.cancel_btn.clicked.connect(self.close)
                         self.button_box.addWidget(self.project_setup_button)
