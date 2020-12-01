@@ -234,12 +234,28 @@ class ProjectTabs(QWidget):
                 ###TEMPLATE TAB###
                 self.template_widget = QWidget()
                 self.template_box = QVBoxLayout()
-                setup_type = ['CGI Short','Stop Motion','2D Animation','Mixed Media']
-                combo_box_list = ['PINATA','PARANORMAN','STARWARS','GHIBLI']
+                
+                cur_path = os.path.dirname(__file__)
+                json_template_path = os.path.join(cur_path,'JSON')
+                template_structure = dict()
 
-                for project_type in setup_type:
+                for directory in sorted(os.listdir(json_template_path)):
+                        directory_path = os.path.join(json_template_path,directory)
+                        template_structure[directory] = []
+                        json_list_info = dict()
+                        for json_file in sorted(os.listdir(directory_path)):
+                                json_file_path = os.path.join(directory_path,json_file)
+                                json_list_info[json_file.replace('.json','')] = json_file_path
+                        
+                        template_structure[directory].append(json_list_info)
+
+                print(template_structure)
+
+                for project_type, json_list in template_structure.items():
                         self.button_box = QHBoxLayout()
                         self.project_setup_button = QPushButton(project_type)
+                        self.project_setup_button.setFixedSize( 120, 40 )
+
                         self.button_templates = QComboBox()
                         self.button_templates.setStyleSheet("""
                         QComboBox::down-arrow {
@@ -248,7 +264,8 @@ class ProjectTabs(QWidget):
                         height: 14px;
                         }                   
                         """)
-                        self.button_templates.addItems(combo_box_list)
+                        for i,content in enumerate(json_list):
+                                self.button_templates.addItems(json_list[i])
                         #self.cancel_btn.clicked.connect(self.close)
                         self.button_box.addWidget(self.project_setup_button)
                         self.button_box.addWidget(self.button_templates)

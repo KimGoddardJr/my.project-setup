@@ -53,14 +53,14 @@ class source_structure(object):
          json_file.close()
 
 
-json_dummy = {'data': {'keyA': [{'subkeyA1': 'valueA1', 'subkeyA2': 'valueA2'}, {'subkeyA3': ''}], 'keyB': [None,None,None]}}
-#os.rmdir('/home/kg/Documents/MIKE')
-source_project = source_structure('MENGELE')
-data = source_project.check_folder('/home/kg/Storage/Dropbox/_libraries')
+##json_dummy = {'data': {'keyA': [{'subkeyA1': 'valueA1', 'subkeyA2': 'valueA2'}, {'subkeyA3': ''}], 'keyB': [None,None,None]}}
 
-source_project.write_a_structure('/home/kg/Documents',data)
+##source_project = source_structure('MENGELE')
+##data = source_project.check_folder('/home/kg/Storage/Dropbox/_libraries')
+
+##source_project.write_a_structure('/home/kg/Documents',data)
 
 
 #json.dump('/Users/patagu/Documents/dump', remove_null_bool(data))
 
-print(data)
+##print(data)

@@ -56,5 +56,5 @@ class setup_maker(object):
                 pass
 
 #os.rmdir('/home/kg/Documents/MIKE')
-setup = setup_maker('/home/kg/Documents')
-setup.folder_setup('MENGELE','/home/kg/Documents/','MENGELE.json')
+#setup = setup_maker('/home/kg/Documents')
+#setup.folder_setup('MENGELE','/home/kg/Documents/','MENGELE.json')
