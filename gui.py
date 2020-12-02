@@ -153,9 +153,8 @@ class ProjectManager(QWidget):
                 self.initUI()
 
         def initUI(self):
-
                 self.toolbox = QVBoxLayout()
-                
+
                 self.image_box = QVBoxLayout()
                 hslu_image_menu = SizePimp().imageFromBase64(hslu_icon_large.encode('utf-8'))
                 #bergli_pic = os.path.join('PICS','bergli_circle.png')
@@ -199,12 +198,15 @@ class ProjectManager(QWidget):
                 default_text = os.path.join(default_path,'Documents',self.project_name.text())
                 self.path_text = QLineEdit(default_text)
                 self.path_text.textChanged.connect(self.path_text_change)
+
+                self.text_changes()
+                self.path_text_change()
                 #self.path_box.addWidget(self.path_label)
                 self.path_box.addWidget(self.path_text)
                 ######
                 self.toolbox.addLayout(self.path_box)
                 ######
-                
+
                 self.setLayout(self.toolbox)
 
         
@@ -278,10 +280,10 @@ class ProjectTabs(ProjectManager):
                 for (project_type, json_list) in self.template_structure.items():
                         self.button_box = QHBoxLayout()
                         self.project_setup_button = QPushButton(project_type)
+
                         self.project_setup_button.setFixedSize( 120, 40 )
                         ###store_data###
                         self.project_button_list.append(self.project_setup_button)
-
                         self.button_templates = QComboBox()
                         self.button_templates.setStyleSheet("""
                         QComboBox::down-arrow {
@@ -322,9 +324,40 @@ class ProjectTabs(ProjectManager):
                 self.source_widget = QWidget()
                 self.source_box = QVBoxLayout()
 
+                ####source path gui####
+                self.source_path_box = QHBoxLayout()
+                self.choose_source = QPushButton('Source PATH')
+                self.choose_source.clicked.connect(self.choose_source_folder)
+                self.source_path = QLineEdit(self.project_path)
+                self.source_path_box.addWidget(self.source_path)
+                self.source_path_box.addWidget(self.choose_source)
+                self.source_box.addLayout(self.source_path_box)
+
+                ####make a project gui#####
+                self.project_from_source_button = QPushButton('Create Structure from Source')
+                self.source_box.addWidget(self.project_from_source_button)
+                ####store source as template####
+                self.create_template_box = QHBoxLayout()
+                self.store_template_button = QPushButton('Store Structure as Template')
+                self.template_choice = QComboBox()
+                self.template_choice.setStyleSheet("""
+                        QComboBox::down-arrow {
+                        image: url(PICS/dropdown_arrow.png);
+                        width: 14px;
+                        height: 14px;
+                        }                   
+                        """)
+                self.cur_buttons = []
+                for b in self.template_structure:
+                        self.cur_buttons.append(b)
+
+                #self.template_choice.addItems(self.cur_buttons)
+                self.create_template_box.addWidget(self.store_template_button)
+                self.create_template_box.addWidget(self.template_choice)
+                #self.source_path.textChanged.connect(self.choose_source_folder)
+
                 self.source_widget.setLayout(self.source_box)
                 self.main_tab.addTab(self.source_widget,'SOURCE PROJECT')
-
                 ###SETUP TABS###s
                 self.tab_placement = QHBoxLayout()
                 self.tab_placement.addWidget(self.main_tab)
@@ -332,8 +365,7 @@ class ProjectTabs(ProjectManager):
                 self.setLayout(self.tab_placement)
 
 
-                ###dummy widgets###
-
+                ###dummy widgets to get data from ProjectManager###
                 self.dummy_name = QLineEdit()
                 self.dummy_path = QLineEdit()
 
@@ -372,16 +404,39 @@ class ProjectTabs(ProjectManager):
                 selected_file_path = self.template_structure[button_name][0][selected_file]
                 selected_file_dir = os.path.dirname(selected_file_path)
                 selected_file_format = '{}.json'.format(selected_file)
-                #self.setup_project(selected_file_dir,selected_file_format,self.project_path,self.project_name)
-                print(button_index)
-                print(button_name)
-                print(selected_file)
-                print(selected_file_path)
-                print(selected_file_dir)
-                print(selected_file_format)
-                print(self.dummy_name.text())
-                print(self.dummy_path.text())
+                #print(button_index)
+                #print(button_name)
+                #print(selected_file)
+                #print(selected_file_path)
+                #print(selected_file_dir)
+                #print(selected_file_format)
+                if self.dummy_name.text() == '':
+                        project_output_name = self.project_name
+                        #print(project_output_name)
+                else:   
+                        project_output_name = self.dummy_name.text()
+                        #print(project_output_name)
+                
+                if self.dummy_path.text() == '':
+                        project_output_path = self.project_path
+                        #print(project_output_path)
+                else:   
+                        if os.path.isdir(os.path.dirname(self.dummy_path.text())):
+                                project_output_path = os.path.dirname(self.dummy_path.text())
+                                #print(project_output_path)
+                        else:   
+                                project_output_path = self.project_path
+                                print('Your path is empty creating project in Default')
+
+                return self.setup_project(selected_file_dir,selected_file_format,project_output_path,project_output_name)
+
+                #print(self.dummy_name.text())
+                #print(self.dummy_path.text())
                 #print(global_project_path)
+        
+        def choose_source_folder(self):
+                input_dir = QFileDialog.getExistingDirectory(None, 'Select a folder:', os.path.expanduser("~"))
+                self.source_path.setText(input_dir)
 
 def main():         
     app = QApplication(sys.argv)

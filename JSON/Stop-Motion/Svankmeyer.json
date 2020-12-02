@@ -1,0 +1,10 @@
+{
+    "Dummy":[
+        {"dummy01_subfolder" : []},
+        {"dummy02_subfolder" : []},
+        {"dummy03_subfolder" : [
+            {"dummy01_subsubfolder" : []}
+                ]}
+            ]
+
+}
