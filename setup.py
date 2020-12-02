@@ -56,5 +56,7 @@ class setup_maker(object):
                 pass
 
 #os.rmdir('/home/kg/Documents/MIKE')
-#setup = setup_maker('/home/kg/Documents')
-#setup.folder_setup('MENGELE','/home/kg/Documents/','MENGELE.json')
+#cur_dir = os.path.dirname(__file__)
+#cur_path = os.path.join(cur_dir,'JSON/3D-Short')
+#setup = setup_maker(cur_path)
+#setup.folder_setup('PINATA','/Users/patagu/Documents/','Pinata.json')

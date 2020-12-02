@@ -10,7 +10,7 @@ from glob import glob
 import base64
 from collections import defaultdict
 from PyQt5.QtWidgets import QApplication, QTabWidget, QLabel, QCheckBox, QComboBox, QWidget, QMainWindow, QSizePolicy, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QLineEdit, QSystemTrayIcon
-from PyQt5.QtCore import Qt, QSize, QByteArray
+from PyQt5.QtCore import Qt, QSize, QByteArray, pyqtSignal, pyqtSlot
 from PyQt5 import QtGui
 
 from draw_items import hslu_icon_large, hslu_icon_small
@@ -71,7 +71,7 @@ class SizePimp(QWidget):
 class App(QMainWindow):
 
         def __init__(self):
-                super().__init__()
+                super(App,self).__init__()
                 # size definitions
                 
                 x, y = self.get_resolution()
@@ -128,6 +128,9 @@ class App(QMainWindow):
                 self.setMenuWidget(self.project_manager)
                 self.setCentralWidget(self.tab_options)
 
+                self.project_manager.project_name_start.connect(self.tab_options.receive_name_from_ProjectManager)
+                self.project_manager.project_path_start.connect(self.tab_options.receive_path_from_ProjectManager)
+
                 self.show()
 
         def get_resolution(self):
@@ -136,8 +139,12 @@ class App(QMainWindow):
                 geo = screen.availableGeometry()
                         
                 return (geo.width(), geo.height())
-      
+
+
 class ProjectManager(QWidget):
+
+        project_name_start = pyqtSignal(str)
+        project_path_start = pyqtSignal(str)
 
         def __init__(self, *args, **kwargs):
                 super(ProjectManager, self).__init__(*args, **kwargs)
@@ -146,7 +153,6 @@ class ProjectManager(QWidget):
                 self.initUI()
 
         def initUI(self):
-
 
                 self.toolbox = QVBoxLayout()
                 
@@ -175,7 +181,7 @@ class ProjectManager(QWidget):
                         """
                                                 )
                 self.project_name.textChanged.connect(self.text_changes)
-
+                
                 self.path_btn = QPushButton('PATH')
                 self.path_btn.clicked.connect(self.choose_directory)
 
@@ -192,7 +198,7 @@ class ProjectManager(QWidget):
                 default_path = Path.home()
                 default_text = os.path.join(default_path,'Documents',self.project_name.text())
                 self.path_text = QLineEdit(default_text)
-
+                self.path_text.textChanged.connect(self.path_text_change)
                 #self.path_box.addWidget(self.path_label)
                 self.path_box.addWidget(self.path_text)
                 ######
@@ -200,6 +206,7 @@ class ProjectManager(QWidget):
                 ######
                 
                 self.setLayout(self.toolbox)
+
         
         def choose_directory(self):
                 input_dir = QFileDialog.getExistingDirectory(None, 'Select a folder:', os.path.expanduser("~"))
@@ -212,19 +219,32 @@ class ProjectManager(QWidget):
                         proj_path = os.path.dirname(self.path_text.text())
                         dynamic_path = os.path.join(proj_path,proj_name)
                         self.path_text.setText(dynamic_path)
+                        
+                        self.project_name_start.emit(self.project_name.text())
+                        
+
+                        return proj_name,proj_path
 
                 except OSError as exc:
                         if exc.errno != errno.EEXIST:
                                 raise
                         pass
+       
+        def path_text_change(self):
+                self.project_path_start.emit(self.path_text.text())
 
 
-class ProjectTabs(QWidget):
+class ProjectTabs(ProjectManager):
 
-        def __init__(self, *args, **kwargs):
-                super(ProjectTabs, self).__init__(*args, **kwargs)
+        project_name_end = pyqtSignal(str)
+        project_path_end = pyqtSignal(str)
+
+        def __init__(self,parent=None):
+                super(ProjectManager, self).__init__(parent)
                 #self.parent = parent
-                #resolution = ScreenInfo.resolution()
+                ###get variables###
+                self.project_manager = ProjectManager(self)
+                self.project_name,self.project_path = ProjectManager(self).text_changes()
                 self.initUI()
 
         def initUI(self):
@@ -235,26 +255,32 @@ class ProjectTabs(QWidget):
                 self.template_widget = QWidget()
                 self.template_box = QVBoxLayout()
                 
+                ###get template preset types and templates###
                 cur_path = os.path.dirname(__file__)
                 json_template_path = os.path.join(cur_path,'JSON')
-                template_structure = dict()
+                self.template_structure = dict()
 
                 for directory in sorted(os.listdir(json_template_path)):
                         directory_path = os.path.join(json_template_path,directory)
-                        template_structure[directory] = []
+                        self.template_structure[directory] = []
                         json_list_info = dict()
                         for json_file in sorted(os.listdir(directory_path)):
                                 json_file_path = os.path.join(directory_path,json_file)
                                 json_list_info[json_file.replace('.json','')] = json_file_path
                         
-                        template_structure[directory].append(json_list_info)
+                        self.template_structure[directory].append(json_list_info)
 
-                print(template_structure)
-
-                for project_type, json_list in template_structure.items():
+                #print(template_structure)
+                ###create menu###
+                self.template_to_call = []
+                template_items = []
+                self.project_button_list = []
+                for (project_type, json_list) in self.template_structure.items():
                         self.button_box = QHBoxLayout()
                         self.project_setup_button = QPushButton(project_type)
                         self.project_setup_button.setFixedSize( 120, 40 )
+                        ###store_data###
+                        self.project_button_list.append(self.project_setup_button)
 
                         self.button_templates = QComboBox()
                         self.button_templates.setStyleSheet("""
@@ -264,9 +290,26 @@ class ProjectTabs(QWidget):
                         height: 14px;
                         }                   
                         """)
-                        for i,content in enumerate(json_list):
-                                self.button_templates.addItems(json_list[i])
-                        #self.cancel_btn.clicked.connect(self.close)
+                        for json_file_list in json_list:
+                                self.button_templates.addItems(json_file_list)
+                                ###store_data###
+                                self.template_to_call.append(self.button_templates)
+                                template_items.append(json_file_list)
+                        
+                                ###connect the buttons making use of labmda iteration###
+                                for j,json_file in enumerate(json_file_list):
+                                        #cur_template = cur_template_group.itemText(j)
+                                        #print(cur_template)
+                                        #print(cur_template_group.itemText(j))
+                                        #print(json_file_list,json_file)
+                                        json_file_path = json_file_list[json_file]
+                                        json_file_dir=os.path.dirname(json_file_path)
+
+                                
+                        self.button_templates.activated.connect(self.return_cur_json)
+                        #self.button_name = self.project_setup_button.text()
+                        self.project_setup_button.clicked.connect(self.selected_file)
+
                         self.button_box.addWidget(self.project_setup_button)
                         self.button_box.addWidget(self.button_templates)
                         self.template_box.addLayout(self.button_box)
@@ -274,7 +317,8 @@ class ProjectTabs(QWidget):
                 self.template_widget.setLayout(self.template_box)
                 self.main_tab.addTab(self.template_widget,'TEMPLATES')
 
-                ###SOURCE PROJECT###
+
+                ###SOURCE PROJECT TAB###
                 self.source_widget = QWidget()
                 self.source_box = QVBoxLayout()
 
@@ -287,6 +331,57 @@ class ProjectTabs(QWidget):
                 
                 self.setLayout(self.tab_placement)
 
+
+                ###dummy widgets###
+
+                self.dummy_name = QLineEdit()
+                self.dummy_path = QLineEdit()
+
+        def setup_project(self,json_path,json_name,project_path,project_name):
+                setup = setup_maker(json_path)
+                return setup.folder_setup(project_name,project_path,json_name)
+        
+        def return_cur_json(self):
+                self.cur_templates_list = []
+                for i,template in enumerate(self.template_to_call):
+                        if isinstance(template, QComboBox):
+                                template_name = template.currentText()
+                                self.cur_templates_list.append(template_name)
+                #print(self.cur_templates_list)
+                return self.cur_templates_list
+
+        @pyqtSlot(str)
+        def receive_name_from_ProjectManager(self,message):
+                self.dummy_name.setText(message)
+                print(message)
+                return(message)
+
+        @pyqtSlot(str)
+        def receive_path_from_ProjectManager(self,message):
+                self.dummy_path.setText(message)
+                print(message)
+                return(message)
+
+        
+        def selected_file(self):
+                ###self.sender() is the meat of this function. It avoids lambda and saves memory### 
+                button_index = self.project_button_list.index(self.sender())
+                ###remaining is peanuts###
+                button_name = self.project_button_list[button_index].text()
+                selected_file = self.return_cur_json()[button_index]
+                selected_file_path = self.template_structure[button_name][0][selected_file]
+                selected_file_dir = os.path.dirname(selected_file_path)
+                selected_file_format = '{}.json'.format(selected_file)
+                #self.setup_project(selected_file_dir,selected_file_format,self.project_path,self.project_name)
+                print(button_index)
+                print(button_name)
+                print(selected_file)
+                print(selected_file_path)
+                print(selected_file_dir)
+                print(selected_file_format)
+                print(self.dummy_name.text())
+                print(self.dummy_path.text())
+                #print(global_project_path)
 
 def main():         
     app = QApplication(sys.argv)
