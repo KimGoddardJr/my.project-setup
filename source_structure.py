@@ -36,6 +36,8 @@ class source_structure(object):
                         final_dict[a] = list(filter(None, [self.cleanup(i) for i in b]))
                     else:
                         final_dict[a] = b
+                else:
+                    final_dict[a] = [] 
             return final_dict
         except:
             pass
@@ -47,7 +49,7 @@ class source_structure(object):
          json_text = json.dumps(clean_text, indent = 2, sort_keys = True)
 
          with open("{}.json".format(file_path), "w") as json_file:
-             json_text = json.dumps(clean_text, indent = 2, sort_keys = True)
+             #json_text = json.dumps(clean_text, indent = 2, sort_keys = True)
              json_file.write(json_text)
 
          json_file.close()
