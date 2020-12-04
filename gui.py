@@ -15,12 +15,33 @@ from PyQt5 import QtGui
 
 from draw_items import hslu_icon_large, hslu_icon_small
 from setup import setup_maker
+from source_structure import source_structure
 
+class QPaxButton(QPushButton):
 
-
-class SizePimp(QWidget):
         def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
+                super(QPaxButton, self).__init__(*args, **kwargs)
+                #self.parent = parent
+                #resolution = ScreenInfo.resolution()
+
+                self.setFixedSize( 120, 40 )
+
+class QComboPax(QComboBox):
+
+        def __init__(self, *args, **kwargs):
+                super(QComboPax, self).__init__(*args, **kwargs)
+                #self.parent = parent
+                #resolution = ScreenInfo.resolution()
+
+                self.setStyleSheet("""
+                        QComboBox::down-arrow {
+                        image: url(PICS/dropdown_arrow.png);
+                        width: 14px;
+                        height: 14px;
+                        }                   
+                        """)
+
+class SizePimp(object):
 
         def launch_decorator(launch):
                 def check_exec_type(self,software):
@@ -259,11 +280,14 @@ class ProjectTabs(ProjectManager):
                 
                 ###get template preset types and templates###
                 cur_path = os.path.dirname(__file__)
-                json_template_path = os.path.join(cur_path,'JSON')
+                self.json_template_path = os.path.join(cur_path,'JSON')
+                self.template_structure = self.update_templates()
+                
+                """
                 self.template_structure = dict()
 
-                for directory in sorted(os.listdir(json_template_path)):
-                        directory_path = os.path.join(json_template_path,directory)
+                for directory in sorted(os.listdir(self.json_template_path)):
+                        directory_path = os.path.join(self.json_template_path,directory)
                         self.template_structure[directory] = []
                         json_list_info = dict()
                         for json_file in sorted(os.listdir(directory_path)):
@@ -271,43 +295,28 @@ class ProjectTabs(ProjectManager):
                                 json_list_info[json_file.replace('.json','')] = json_file_path
                         
                         self.template_structure[directory].append(json_list_info)
-
+                """
                 #print(template_structure)
                 ###create menu###
                 self.template_to_call = []
                 template_items = []
                 self.project_button_list = []
+
                 for (project_type, json_list) in self.template_structure.items():
                         self.button_box = QHBoxLayout()
-                        self.project_setup_button = QPushButton(project_type)
+                        self.project_setup_button = QPaxButton(project_type)
 
                         self.project_setup_button.setFixedSize( 120, 40 )
                         ###store_data###
                         self.project_button_list.append(self.project_setup_button)
-                        self.button_templates = QComboBox()
-                        self.button_templates.setStyleSheet("""
-                        QComboBox::down-arrow {
-                        image: url(PICS/dropdown_arrow.png);
-                        width: 14px;
-                        height: 14px;
-                        }                   
-                        """)
+                        self.button_templates = QComboPax()
+
                         for json_file_list in json_list:
                                 self.button_templates.addItems(json_file_list)
                                 ###store_data###
                                 self.template_to_call.append(self.button_templates)
                                 template_items.append(json_file_list)
-                        
-                                ###connect the buttons making use of labmda iteration###
-                                for j,json_file in enumerate(json_file_list):
-                                        #cur_template = cur_template_group.itemText(j)
-                                        #print(cur_template)
-                                        #print(cur_template_group.itemText(j))
-                                        #print(json_file_list,json_file)
-                                        json_file_path = json_file_list[json_file]
-                                        json_file_dir=os.path.dirname(json_file_path)
 
-                                
                         self.button_templates.activated.connect(self.return_cur_json)
                         #self.button_name = self.project_setup_button.text()
                         self.project_setup_button.clicked.connect(self.selected_file)
@@ -323,6 +332,7 @@ class ProjectTabs(ProjectManager):
                 ###SOURCE PROJECT TAB###
                 self.source_widget = QWidget()
                 self.source_box = QVBoxLayout()
+                self.source_box.addStretch()
 
                 ####source path gui####
                 self.source_path_box = QHBoxLayout()
@@ -333,32 +343,39 @@ class ProjectTabs(ProjectManager):
                 self.source_path_box.addWidget(self.choose_source)
                 self.source_box.addLayout(self.source_path_box)
 
-                ####make a project gui#####
-                self.project_from_source_button = QPushButton('Create Structure from Source')
-                self.source_box.addWidget(self.project_from_source_button)
                 ####store source as template####
                 self.create_template_box = QHBoxLayout()
-                self.store_template_button = QPushButton('Store Structure as Template')
-                self.template_choice = QComboBox()
-                self.template_choice.setStyleSheet("""
-                        QComboBox::down-arrow {
-                        image: url(PICS/dropdown_arrow.png);
-                        width: 14px;
-                        height: 14px;
-                        }                   
-                        """)
+                self.store_template_button = QPaxButton('Save Template')
+                self.store_template_button.clicked.connect(self.save_source_folder)
+                self.template_choice = QComboPax()
                 self.cur_buttons = []
-                for b in self.template_structure:
+                for b,x in self.template_structure.items():
                         self.cur_buttons.append(b)
-
-                #self.template_choice.addItems(self.cur_buttons)
+                self.template_choice.addItems(sorted(self.cur_buttons))
                 self.create_template_box.addWidget(self.store_template_button)
                 self.create_template_box.addWidget(self.template_choice)
-                #self.source_path.textChanged.connect(self.choose_source_folder)
+                self.source_box.addLayout(self.create_template_box)
+                self.source_box.addStretch()
+                ####link dependencies to your project#####
+                self.info_text_box = QVBoxLayout()
+                default_dir = os.path.basename(self.source_path.text())
+                self.info_text = QLabel('Collect reusable files from \'{}\' Project'.format(default_dir))
+                self.info_text_box.addWidget(self.info_text, alignment=Qt.AlignCenter)
+                self.source_box.addLayout(self.info_text_box)
 
+                self.proj_fs_box = QHBoxLayout()
+                self.project_from_source_button = QPaxButton('Copy')
+                #self.proj_fs_box.setAlignment(Qt.AlignCenter)
+                self.proj_fs_box.addWidget(self.project_from_source_button)
+                self.source_box.addLayout(self.proj_fs_box)
+                self.source_box.addStretch()
+                #self.source_path.textChanged.connect(self.choose_source_folder)
+                
+                ###source widgets###
                 self.source_widget.setLayout(self.source_box)
                 self.main_tab.addTab(self.source_widget,'SOURCE PROJECT')
-                ###SETUP TABS###s
+                
+                ###SETUP TABS###
                 self.tab_placement = QHBoxLayout()
                 self.tab_placement.addWidget(self.main_tab)
                 
@@ -437,6 +454,51 @@ class ProjectTabs(ProjectManager):
         def choose_source_folder(self):
                 input_dir = QFileDialog.getExistingDirectory(None, 'Select a folder:', os.path.expanduser("~"))
                 self.source_path.setText(input_dir)
+                sel_folder = os.path.basename(input_dir)
+                new_info_text = 'Collect reusable files from \'{}\' Project'.format(sel_folder)
+                self.info_text.setText(new_info_text)
+
+        def save_source_folder(self):
+                if self.dummy_name.text() == '':
+                        project_output_name = self.project_name
+                        #print(project_output_name)
+                else:   
+                        project_output_name = self.dummy_name.text()
+                        #print(project_output_name)
+                
+                source_project = source_structure(project_output_name)
+                data = source_project.check_folder(self.source_path.text())
+                save_to = self.template_choice.currentText()
+                
+                save_to_dir = os.path.join(self.json_template_path,save_to)
+                #print(save_to_dir)
+                source_project.write_a_structure(save_to_dir,data)
+
+                current_templates = self.update_templates()
+
+                """
+                if project_output_name not in self.return_cur_json():
+                        self.button_templates.addItem(project_output_name)
+                """
+
+
+        def update_templates(self):
+
+                template_structure = dict()
+
+                for directory in sorted(os.listdir(self.json_template_path)):
+                        directory_path = os.path.join(self.json_template_path,directory)
+                        template_structure[directory] = []
+                        json_list_info = dict()
+                        for json_file in sorted(os.listdir(directory_path)):
+                                json_file_path = os.path.join(directory_path,json_file)
+                                json_list_info[json_file.replace('.json','')] = json_file_path
+                        
+                        template_structure[directory].append(json_list_info)
+
+                return template_structure
+
+
 
 def main():         
     app = QApplication(sys.argv)

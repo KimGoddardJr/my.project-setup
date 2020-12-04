@@ -1,0 +1,36 @@
+{
+  "Music": [
+    {
+      "Music": [
+        {
+          "Music Library.musiclibrary": []
+        }
+      ]
+    },
+    {
+      "iTunes": [
+        {
+          "iTunes Media": [
+            {
+              "Automatically Add to TV.localized": [
+                {
+                  ".localized": []
+                }
+              ]
+            },
+            {
+              "Automatically Add to iTunes.localized": [
+                {
+                  ".localized": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Album Artwork": []
+        }
+      ]
+    }
+  ]
+}

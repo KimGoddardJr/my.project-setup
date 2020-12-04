@@ -55,10 +55,10 @@ class source_structure(object):
 
 ##json_dummy = {'data': {'keyA': [{'subkeyA1': 'valueA1', 'subkeyA2': 'valueA2'}, {'subkeyA3': ''}], 'keyB': [None,None,None]}}
 
-source_project = source_structure('PINATA')
-data = source_project.check_folder('/Volumes/projects/_TO_BE_DELETED_SOON/2020_BA_LaVidaDeUnaPinata')
+#source_project = source_structure('PINATA')
+#data = source_project.check_folder('/Volumes/projects/_TO_BE_DELETED_SOON/2020_BA_LaVidaDeUnaPinata')
 
-source_project.write_a_structure('/Users/patagu/Documents',data)
+#source_project.write_a_structure('/Users/patagu/Documents',data)
 
 
 #json.dump('/Users/patagu/Documents/dump', remove_null_bool(data))
